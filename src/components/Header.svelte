@@ -1,5 +1,7 @@
 <script>
   import Icon from './Icon.svelte'
+  import ThemeToggle from './ThemeToggle.svelte'
+  import { openSettings } from '../lib/ui.svelte.js'
   import { route, navigate } from '../lib/router.svelte.js'
   import { shortcuts } from '../lib/keys.js'
 
@@ -51,6 +53,13 @@
       <input type="search" placeholder="Search stories, comments…" aria-label="Search Hacker News" bind:value={q} bind:this={input} onkeydown={onInputKey} />
       <kbd>/</kbd>
     </form>
+
+    <div class="actions">
+      <ThemeToggle />
+      <button class="icon-btn gear" type="button" onclick={openSettings} aria-label="Settings" title="Settings">
+        <Icon name="settings" size={18} />
+      </button>
+    </div>
   </div>
 </header>
 
@@ -149,6 +158,11 @@
     color: var(--text);
   }
 
+  .actions {
+    display: flex;
+    gap: 2px;
+  }
+
   kbd {
     padding: 1px 6px;
     border: 1px solid var(--border-strong);
@@ -160,8 +174,13 @@
 
   @media (max-width: 720px) {
     .nav,
-    .search {
+    .search,
+    .gear {
       display: none;
+    }
+
+    .actions {
+      margin-left: auto;
     }
 
     .inner {

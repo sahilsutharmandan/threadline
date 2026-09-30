@@ -1,5 +1,7 @@
 <script>
   import Header from './components/Header.svelte'
+  import MobileTabBar from './components/MobileTabBar.svelte'
+  import SettingsPanel from './components/SettingsPanel.svelte'
   import Feed from './routes/Feed.svelte'
   import Story from './routes/Story.svelte'
   import Search from './routes/Search.svelte'
@@ -7,6 +9,14 @@
   import ReadLater from './routes/ReadLater.svelte'
   import { route, navigate, match } from './lib/router.svelte.js'
   import { FEED_NAMES } from './lib/api.js'
+  import { settings, applySettings } from './lib/settings.svelte.js'
+
+  $effect(() => {
+    settings.theme
+    settings.fontSize
+    settings.density
+    applySettings()
+  })
 
   const view = $derived.by(() => {
     const p = route.path
@@ -54,3 +64,6 @@
     </div>
   {/if}
 </main>
+
+<MobileTabBar />
+<SettingsPanel />
