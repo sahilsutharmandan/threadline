@@ -2,6 +2,7 @@
   import Icon from './Icon.svelte'
   import { hostOf } from '../lib/url.js'
   import { timeAgo, fullDate, plural } from '../lib/time.js'
+  import { visited, markVisited } from '../lib/history.svelte.js'
 
   let { story, rank, selected = false } = $props()
 
@@ -11,9 +12,10 @@
   const kind = $derived(
     story.tags.includes('ask_hn') ? 'Ask' : story.tags.includes('show_hn') ? 'Show' : null
   )
+  const title = $derived(kind ? story.title.replace(/^(Ask|Show) HN:\s*/i, '') : story.title)
 </script>
 
-<article class="row" class:selected data-story={story.id}>
+<article class="row" class:selected class:seen={visited.has(story.id)} data-story={story.id}>
   {#if rank != null}<span class="rank">{rank}</span>{/if}
 
   <div class="score" title="{story.points} points">
@@ -24,8 +26,14 @@
   <div class="body">
     <h2 class="title">
       {#if kind}<span class="kind">{kind}</span>{/if}
-      <a href={link} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined}>
-        {story.title}
+      <a
+        class="headline"
+        href={link}
+        target={external ? '_blank' : undefined}
+        rel={external ? 'noopener noreferrer' : undefined}
+        onclick={() => markVisited(story.id)}
+      >
+        {title}
       </a>
       {#if host}<a class="site" href="#/search?q={encodeURIComponent(host)}">({host})</a>{/if}
     </h2>
@@ -34,7 +42,7 @@
       <span class="dot">·</span>
       <time title={fullDate(story.time)}>{timeAgo(story.time)}</time>
       <span class="dot">·</span>
-      <a class="comments" href="#/item/{story.id}">
+      <a class="comments" href="#/item/{story.id}" onclick={() => markVisited(story.id)}>
         <Icon name="comment" size={13} />
         {story.comments ? plural(story.comments, 'comment') : 'discuss'}
       </a>
@@ -114,7 +122,11 @@
     letter-spacing: -0.005em;
   }
 
-  .title > a:not(.site):hover {
+  .seen .headline {
+    color: var(--visited);
+  }
+
+  .headline:hover {
     color: var(--accent-strong);
   }
 

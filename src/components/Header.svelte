@@ -1,8 +1,23 @@
 <script>
   import Icon from './Icon.svelte'
   import { route, navigate } from '../lib/router.svelte.js'
+  import { shortcuts } from '../lib/keys.js'
 
   let q = $state('')
+  let input
+
+  $effect(() =>
+    shortcuts({
+      '/': () => input?.focus(),
+    })
+  )
+
+  function onInputKey(e) {
+    if (e.key === 'Escape') {
+      q = ''
+      input.blur()
+    }
+  }
 
   const links = [
     { to: '/top', label: 'Feed', match: (p) => ['/top', '/new', '/ask', '/show'].includes(p) || p.startsWith('/item') },
@@ -32,7 +47,7 @@
 
     <form class="search" role="search" onsubmit={submit}>
       <Icon name="search" size={16} />
-      <input type="search" placeholder="Search stories, comments…" aria-label="Search Hacker News" bind:value={q} />
+      <input type="search" placeholder="Search stories, comments…" aria-label="Search Hacker News" bind:value={q} bind:this={input} onkeydown={onInputKey} />
       <kbd>/</kbd>
     </form>
   </div>
