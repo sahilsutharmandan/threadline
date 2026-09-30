@@ -24,6 +24,6 @@ export function fullDate(seconds) {
   })
 }
 
-export function plural(n, word) {
-  return `${n.toLocaleString()} ${word}${n === 1 ? '' : 's'}`
+export function plural(n, word, many = word + 's') {
+  return `${n.toLocaleString()} ${n === 1 ? word : many}`
 }

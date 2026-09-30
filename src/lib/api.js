@@ -135,3 +135,33 @@ export async function search({ q = '', type = 'story', range = 'all', points = 0
     })),
   }
 }
+
+export async function fetchUser(name, signal) {
+  const data = await get(`users/${encodeURIComponent(name)}`, {}, signal)
+  if (!data.username) throw new Error('Not found')
+  return { name: data.username, karma: data.karma ?? 0, about: data.about || '' }
+}
+
+export async function fetchUserActivity(name, type = 'story', page = 0, signal) {
+  const data = await get(
+    'search_by_date',
+    { tags: `${type},author_${name}`, hitsPerPage: 20, page },
+    signal
+  )
+  return {
+    total: data.nbHits,
+    pages: data.nbPages,
+    page: data.page,
+    items: data.hits.map((h) =>
+      type === 'story'
+        ? toStory(h)
+        : {
+            id: Number(h.objectID),
+            text: h.comment_text ?? '',
+            time: h.created_at_i,
+            storyId: h.story_id,
+            storyTitle: h.story_title,
+          }
+    ),
+  }
+}

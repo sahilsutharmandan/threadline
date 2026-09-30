@@ -5,6 +5,7 @@
   import { fetchItem } from '../lib/api.js'
   import { createCollapse } from '../lib/collapse.svelte.js'
   import { markVisited } from '../lib/history.svelte.js'
+  import { readLater } from '../lib/readLater.svelte.js'
   import { hostOf, hnLink } from '../lib/url.js'
   import { timeAgo, fullDate, plural } from '../lib/time.js'
 
@@ -45,6 +46,12 @@
     if (sort === 'oldest') list.sort((a, b) => a.time - b.time)
     return list
   })
+
+  const saved = $derived(story ? readLater.has(story.id) : false)
+
+  function toggleSaved() {
+    readLater.toggle({ ...story, comments: data.total })
+  }
 
   const anyCollapsed = $derived(collapse.size > 0)
 
@@ -110,6 +117,15 @@
           {#if story.text}
             <div class="text prose">{@html story.text}</div>
           {/if}
+          <div class="story-actions">
+            <button class="btn" class:btn-primary={saved} type="button" onclick={toggleSaved}>
+              <Icon name={saved ? 'bookmark-fill' : 'bookmark'} size={15} />
+              {saved ? 'Saved' : 'Read later'}
+            </button>
+            <a class="btn btn-ghost" href={hnLink(story.id)} target="_blank" rel="noopener noreferrer">
+              <Icon name="external" size={15} /> HN
+            </a>
+          </div>
         </article>
 
         <section class="thread" aria-label="Comments">
@@ -239,6 +255,12 @@
     padding-top: 14px;
     border-top: 1px solid var(--border);
     font-size: var(--text-base);
+  }
+
+  .story-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
   }
 
   .thread {

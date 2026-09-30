@@ -3,8 +3,11 @@
   import { hostOf } from '../lib/url.js'
   import { timeAgo, fullDate, plural } from '../lib/time.js'
   import { visited, markVisited } from '../lib/history.svelte.js'
+  import { readLater } from '../lib/readLater.svelte.js'
 
   let { story, rank, selected = false } = $props()
+
+  const saved = $derived(readLater.has(story.id))
 
   const host = $derived(hostOf(story.url))
   const external = $derived(Boolean(story.url))
@@ -15,7 +18,7 @@
   const title = $derived(kind ? story.title.replace(/^(Ask|Show) HN:\s*/i, '') : story.title)
 </script>
 
-<article class="row" class:selected class:seen={visited.has(story.id)} data-story={story.id}>
+<article class="row" class:ranked={rank != null} class:selected class:seen={visited.has(story.id)} data-story={story.id}>
   {#if rank != null}<span class="rank">{rank}</span>{/if}
 
   <div class="score" title="{story.points} points">
@@ -48,18 +51,33 @@
       </a>
     </div>
   </div>
+
+  <button
+    class="save icon-btn"
+    class:on={saved}
+    type="button"
+    onclick={() => readLater.toggle(story)}
+    aria-pressed={saved}
+    title={saved ? 'Remove from read later' : 'Save for later'}
+  >
+    <Icon name={saved ? 'bookmark-fill' : 'bookmark'} size={17} />
+  </button>
 </article>
 
 <style>
   .row {
     position: relative;
     display: grid;
-    grid-template-columns: 28px 46px minmax(0, 1fr) auto;
+    grid-template-columns: 46px minmax(0, 1fr) auto;
     align-items: start;
     gap: 0 12px;
     padding: var(--row-gap) 16px;
     border-bottom: 1px solid var(--border);
     transition: background-color 0.12s;
+  }
+
+  .row.ranked {
+    grid-template-columns: 28px 46px minmax(0, 1fr) auto;
   }
 
   .row:last-child {
@@ -178,8 +196,33 @@
     gap: 4px;
   }
 
+  .save {
+    margin-top: 2px;
+    color: var(--text-3);
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .row:hover .save,
+  .row.selected .save,
+  .save:focus-visible,
+  .save.on {
+    opacity: 1;
+  }
+
+  .save.on {
+    color: var(--accent);
+  }
+
+  @media (hover: none) {
+    .save {
+      opacity: 1;
+    }
+  }
+
   @media (max-width: 720px) {
-    .row {
+    .row,
+    .row.ranked {
       grid-template-columns: 40px minmax(0, 1fr) auto;
       padding: var(--row-gap) 12px;
     }

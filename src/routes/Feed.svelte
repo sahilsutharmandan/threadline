@@ -7,6 +7,7 @@
   import { shortcuts } from '../lib/keys.js'
   import { markVisited } from '../lib/history.svelte.js'
   import { navigate } from '../lib/router.svelte.js'
+  import { readLater } from '../lib/readLater.svelte.js'
   import { tick } from 'svelte'
 
   let { tab } = $props()
@@ -63,6 +64,11 @@
         markVisited(s.id)
         navigate(`/item/${s.id}`)
       },
+      s: () => {
+        const s = current()
+        if (!s) return false
+        readLater.toggle(s)
+      },
       Enter: () => {
         const s = current()
         if (!s) return false
@@ -108,7 +114,7 @@
 
   <p class="keys">
     <kbd>j</kbd><kbd>k</kbd> move <span>·</span> <kbd>o</kbd> open link <span>·</span>
-    <kbd>c</kbd> comments <span>·</span> <kbd>/</kbd> search
+    <kbd>c</kbd> comments <span>·</span> <kbd>s</kbd> save <span>·</span> <kbd>/</kbd> search
   </p>
 </div>
 
