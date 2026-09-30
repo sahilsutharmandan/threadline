@@ -54,7 +54,7 @@ svg {
 }
 
 .page {
-  padding: 24px 0 56px;
+  padding-block: 24px 56px;
 }
 
 .page-title {
@@ -158,6 +158,6 @@ mark,
   }
 
   .page {
-    padding: 16px 0 calc(var(--tabbar-h) + 32px);
+    padding-block: 16px calc(var(--tabbar-h) + 32px);
   }
 }
