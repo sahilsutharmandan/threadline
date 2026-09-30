@@ -86,3 +86,52 @@ export async function fetchItem(id, signal) {
     total: countComments(children),
   }
 }
+
+export const RANGES = {
+  all: { label: 'Any time', days: null },
+  day: { label: 'Past 24 hours', days: 1 },
+  week: { label: 'Past week', days: 7 },
+  month: { label: 'Past month', days: 30 },
+  year: { label: 'Past year', days: 365 },
+}
+
+export async function search({ q = '', type = 'story', range = 'all', points = 0, sort = 'relevance', page = 0 }, signal) {
+  const filters = []
+  const days = RANGES[range]?.days
+  if (days) filters.push(`created_at_i>${since(days)}`)
+  if (points > 0 && type === 'story') filters.push(`points>=${points}`)
+
+  const data = await get(
+    sort === 'date' ? 'search_by_date' : 'search',
+    {
+      query: q,
+      tags: type,
+      numericFilters: filters.join(',') || undefined,
+      attributesToSnippet: type === 'comment' ? 'comment_text:40' : undefined,
+      hitsPerPage: 20,
+      page,
+    },
+    signal
+  )
+
+  return {
+    total: data.nbHits,
+    pages: data.nbPages,
+    page: data.page,
+    ms: data.processingTimeMS,
+    hits: data.hits.map((h) => ({
+      id: Number(h.objectID),
+      type,
+      author: h.author,
+      time: h.created_at_i,
+      points: h.points ?? 0,
+      comments: h.num_comments ?? 0,
+      url: h.url || null,
+      storyId: h.story_id,
+      storyTitle: h.story_title,
+      title: h._highlightResult?.title?.value ?? h.title ?? '',
+      snippet: h._snippetResult?.comment_text?.value ?? h._highlightResult?.comment_text?.value ?? '',
+      tags: h._tags ?? [],
+    })),
+  }
+}

@@ -150,6 +150,9 @@ mark,
   color: var(--mark-fg);
   border-radius: 3px;
   padding: 0 2px;
+  margin: 0 -2px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 
 @media (max-width: 720px) {

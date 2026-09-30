@@ -21,6 +21,7 @@
 
   const links = [
     { to: '/top', label: 'Feed', match: (p) => ['/top', '/new', '/ask', '/show'].includes(p) || p.startsWith('/item') },
+    { to: '/search', label: 'Search', match: (p) => p === '/search' },
     { to: '/saved', label: 'Read later', match: (p) => p === '/saved' },
   ]
 
