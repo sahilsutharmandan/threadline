@@ -47,3 +47,42 @@ export async function fetchFeed(name, page = 0, signal) {
     pages: data.nbPages,
   }
 }
+
+function toComment(node) {
+  const children = (node.children ?? []).map(toComment).filter(Boolean)
+  if (!node.author && !node.text && children.length === 0) return null
+  return {
+    id: node.id,
+    author: node.author,
+    text: node.text ?? '',
+    time: node.created_at_i,
+    deleted: !node.author,
+    children,
+  }
+}
+
+export function countComments(list) {
+  return list.reduce((n, c) => n + 1 + countComments(c.children), 0)
+}
+
+export async function fetchItem(id, signal) {
+  const data = await get(`items/${id}`, {}, signal)
+  const children = (data.children ?? []).map(toComment).filter(Boolean)
+  return {
+    story: {
+      id: data.id,
+      type: data.type,
+      title: data.title ?? '',
+      url: data.url || null,
+      author: data.author,
+      points: data.points ?? 0,
+      time: data.created_at_i,
+      text: data.text || null,
+      parent: data.parent_id,
+      storyId: data.story_id,
+      tags: data.type === 'story' && /^ask hn/i.test(data.title ?? '') ? ['ask_hn'] : [],
+    },
+    comments: children,
+    total: countComments(children),
+  }
+}
