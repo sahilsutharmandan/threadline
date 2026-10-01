@@ -1,7 +1,9 @@
+const TEXT_TYPES = ['text', 'email', 'password', 'url', 'number']
+
 function isTyping(el) {
   if (!el || el === document.body) return false
-  if (el.isContentEditable) return true
-  return el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT'
+  if (el.isContentEditable || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT') return true
+  return el.tagName === 'INPUT' && TEXT_TYPES.includes(el.type)
 }
 
 export function shortcuts(map) {
