@@ -4,11 +4,11 @@
   import { timeAgo, fullDate } from '../lib/time.js'
   import { countComments } from '../lib/api.js'
 
-  let { comment, depth = 0, op, parent = null } = $props()
+  let { comment, depth = 0, op, path = '0', parent = null } = $props()
 
   const collapse = getContext('collapse')
 
-  const key = $derived(comment.id)
+  const key = $derived(path)
   const collapsed = $derived(collapse.has(key))
   const hidden = $derived(countComments(comment.children))
   const isOp = $derived(!!op && comment.author === op)
@@ -17,8 +17,8 @@
     collapse.toggle(key)
   }
 
-  function jump(id) {
-    const el = document.getElementById(`c-${id}`)
+  function jump(target) {
+    const el = document.getElementById(`c-${target}`)
     if (!el) return
     el.scrollIntoView({ block: 'start', behavior: 'smooth' })
     el.classList.add('flash')
@@ -26,7 +26,7 @@
   }
 </script>
 
-<article class="comment" class:collapsed id="c-{comment.id}" style:--depth={depth}>
+<article class="comment" class:collapsed id="c-{path}" data-id={comment.id} style:--depth={depth}>
   <header class="head">
     <button
       class="toggle"
@@ -68,8 +68,8 @@
     {#if comment.children.length}
       <div class="children" class:flat={depth >= 7}>
         <button class="guide" type="button" aria-label="Collapse thread" onclick={toggle}></button>
-        {#each comment.children as child (child.id)}
-          <Comment comment={child} depth={depth + 1} {op} parent={comment.id} />
+        {#each comment.children as child, i (i)}
+          <Comment comment={child} depth={depth + 1} {op} path="{path}-{i}" parent={path} />
         {/each}
       </div>
     {/if}
@@ -79,6 +79,7 @@
 <style>
   .comment {
     --guide: hsl(calc(var(--depth) * 47 + 18) 72% 56%);
+    margin-left: calc(var(--depth) * var(--indent-step));
     padding-top: var(--comment-gap);
     border-radius: var(--radius-sm);
     transition: background-color 0.6s;
@@ -174,7 +175,6 @@
   .children {
     position: relative;
     margin-left: 9px;
-    padding-left: var(--indent-step);
   }
 
   .children.flat {

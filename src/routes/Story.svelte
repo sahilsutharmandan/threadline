@@ -57,7 +57,7 @@
 
   function toggleAll() {
     if (anyCollapsed) collapse.expandAll()
-    else collapse.collapseAll(threads.map((c) => c.id))
+    else collapse.collapseAll(threads.map((_, i) => String(i)))
   }
 
   async function copyLink() {
@@ -149,9 +149,9 @@
 
           {#if threads.length}
             <div class="comments">
-              {#each threads as c (c.id)}
+              {#each threads as c, i (i)}
                 <div class="top">
-                  <Comment comment={c} depth={0} op={story.author} />
+                  <Comment comment={c} depth={0} op={story.author} path={String(i)} />
                 </div>
               {/each}
             </div>
