@@ -5,9 +5,11 @@
   const icons = { system: 'monitor', light: 'sun', dark: 'moon' }
   const labels = { system: 'System', light: 'Light', dark: 'Dark' }
 
+  let mode = $state(settings.theme)
+
   function cycle() {
-    const next = THEMES[(THEMES.indexOf(settings.theme) + 1) % THEMES.length]
-    settings.update({ theme: next })
+    mode = THEMES[(THEMES.indexOf(mode) + 1) % THEMES.length]
+    settings.update({ theme: mode })
   }
 </script>
 
@@ -15,12 +17,12 @@
   class="icon-btn toggle"
   type="button"
   onclick={cycle}
-  title="Theme: {labels[settings.theme]}"
-  aria-label="Theme: {labels[settings.theme]}. Click to change."
-  data-mode={settings.theme}
+  title="Theme: {labels[mode]}"
+  aria-label="Theme: {labels[mode]}. Click to change."
+  data-mode={mode}
 >
-  {#key settings.theme}
-    <span class="ico"><Icon name={icons[settings.theme]} size={18} /></span>
+  {#key mode}
+    <span class="ico"><Icon name={icons[mode]} size={18} /></span>
   {/key}
 </button>
 

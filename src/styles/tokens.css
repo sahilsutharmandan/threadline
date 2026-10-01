@@ -8,7 +8,7 @@
   --text-md: 1.0625rem;
   --text-lg: 1.25rem;
   --text-xl: 1.625rem;
-  --text-comment: 0.9375rem;
+  --text-comment: 15px;
 
   --radius-sm: 6px;
   --radius: 10px;
@@ -70,9 +70,6 @@
   --visited: #85827b;
   --focus: #6c9bff;
 
-  --mark-bg: rgb(250 204 21 / 26%);
-  --mark-fg: #ffe58a;
-
   --op-bg: #1d2a44;
   --op-fg: #9cbcff;
 
@@ -84,7 +81,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root[data-theme='system'] {
+  :root:not([data-theme]) {
     --accent: #ff7a45;
     --accent-strong: #ff9466;
     --accent-soft: #3a2218;
@@ -101,9 +98,6 @@
     --link: #8fb0ff;
     --visited: #85827b;
     --focus: #6c9bff;
-
-    --mark-bg: rgb(250 204 21 / 26%);
-    --mark-fg: #ffe58a;
 
     --op-bg: #1d2a44;
     --op-fg: #9cbcff;

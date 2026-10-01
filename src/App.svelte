@@ -9,7 +9,12 @@
   import ReadLater from './routes/ReadLater.svelte'
   import { route, navigate, match } from './lib/router.svelte.js'
   import { FEED_NAMES } from './lib/api.js'
+  import { onMount } from 'svelte'
   import { settings, applySettings } from './lib/settings.svelte.js'
+
+  onMount(() => {
+    settings.init()
+  })
 
   $effect(() => {
     settings.theme
