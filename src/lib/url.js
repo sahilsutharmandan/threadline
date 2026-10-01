@@ -7,6 +7,11 @@ export function hostOf(url) {
   }
 }
 
+export function siteLabel(url) {
+  const host = url?.split('/')[2]
+  return `(${host})`
+}
+
 export function hnLink(id) {
   return `https://news.ycombinator.com/item?id=${id}`
 }

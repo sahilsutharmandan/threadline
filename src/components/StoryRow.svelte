@@ -1,6 +1,6 @@
 <script>
   import Icon from './Icon.svelte'
-  import { hostOf } from '../lib/url.js'
+  import { hostOf, siteLabel } from '../lib/url.js'
   import { timeAgo, fullDate, plural } from '../lib/time.js'
   import { visited, markVisited } from '../lib/history.svelte.js'
   import { readLater } from '../lib/readLater.svelte.js'
@@ -9,7 +9,7 @@
 
   const saved = $derived(readLater.has(story.id))
 
-  const host = $derived(hostOf(story.url))
+  const site = $derived(siteLabel(story.url))
   const external = $derived(Boolean(story.url))
   const link = $derived(story.url || `#/item/${story.id}`)
   const kind = $derived(
@@ -38,7 +38,7 @@
       >
         {title}
       </a>
-      {#if host}<a class="site" href="#/search?q={encodeURIComponent(host)}">({host})</a>{/if}
+      {#if site}<a class="site" href="#/search?q={encodeURIComponent(hostOf(story.url))}">{site}</a>{/if}
     </h2>
     <div class="meta">
       <a class="author" href="#/user/{story.author}">{story.author}</a>

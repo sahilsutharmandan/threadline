@@ -6,7 +6,7 @@
   import { createCollapse } from '../lib/collapse.svelte.js'
   import { markVisited } from '../lib/history.svelte.js'
   import { readLater } from '../lib/readLater.svelte.js'
-  import { hostOf, hnLink } from '../lib/url.js'
+  import { siteLabel, hnLink } from '../lib/url.js'
   import { timeAgo, fullDate, plural } from '../lib/time.js'
 
   let { id } = $props()
@@ -37,7 +37,7 @@
   })
 
   const story = $derived(data?.story)
-  const host = $derived(hostOf(story?.url))
+  const site = $derived(siteLabel(story?.url))
 
   const threads = $derived.by(() => {
     if (!data) return []
@@ -102,10 +102,10 @@
               {story.title}
             {/if}
           </h1>
-          {#if host}
+          {#if story.url}
             <a class="site" href={story.url} target="_blank" rel="noopener noreferrer">
               <Icon name="external" size={13} />
-              {host}
+              {site}
             </a>
           {/if}
           <div class="meta">
