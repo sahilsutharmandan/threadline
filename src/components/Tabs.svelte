@@ -1,27 +1,18 @@
 <script>
+  import { onMount } from 'svelte'
   import Icon from './Icon.svelte'
 
   let { items, active, onselect, label = 'Sections' } = $props()
 
   let list
-  let bar = $state({ x: 0, w: 0, ready: false })
+  let offsets = $state([])
 
-  function measure() {
-    const el = list?.querySelector('[data-active="true"]')
-    if (!el) return
-    bar = { x: el.offsetLeft, w: el.offsetWidth, ready: true }
-  }
-
-  $effect(() => {
-    active
-    measure()
+  onMount(() => {
+    offsets = [...list.querySelectorAll('.tab')].map((el) => ({ x: el.offsetLeft, w: el.offsetWidth }))
   })
 
-  $effect(() => {
-    const ro = new ResizeObserver(measure)
-    ro.observe(list)
-    return () => ro.disconnect()
-  })
+  const index = $derived(items.findIndex((item) => item.id === active))
+  const bar = $derived(offsets[index] ? { ...offsets[index], ready: true } : { x: 0, w: 0, ready: false })
 </script>
 
 <div class="tabs" bind:this={list} role="tablist" aria-label={label}>
@@ -35,7 +26,11 @@
         data-active={item.id === active}
       >
         {#if item.icon}<Icon name={item.icon} size={15} />{/if}
-        <span>{item.label}</span>
+        {#if item.short}
+          <span class="long">{item.label}</span><span class="short">{item.short}</span>
+        {:else}
+          <span>{item.label}</span>
+        {/if}
         {#if item.count != null}<span class="count">{item.count}</span>{/if}
       </a>
     {:else}
@@ -48,7 +43,11 @@
         onclick={() => onselect?.(item.id)}
       >
         {#if item.icon}<Icon name={item.icon} size={15} />{/if}
-        <span>{item.label}</span>
+        {#if item.short}
+          <span class="long">{item.label}</span><span class="short">{item.short}</span>
+        {:else}
+          <span>{item.label}</span>
+        {/if}
         {#if item.count != null}<span class="count">{item.count}</span>{/if}
       </button>
     {/if}
@@ -65,7 +64,7 @@
   .tabs {
     position: relative;
     display: flex;
-    gap: 4px;
+    gap: 6px;
     border-bottom: 1px solid var(--border);
   }
 
@@ -73,7 +72,7 @@
     display: inline-flex;
     align-items: center;
     gap: 7px;
-    padding: 10px 14px 12px;
+    padding: 10px 16px 12px;
     border: 0;
     background: none;
     color: var(--text-2);
@@ -89,6 +88,10 @@
 
   .tab[data-active='true'] {
     color: var(--text);
+  }
+
+  .short {
+    display: none;
   }
 
   .count {
@@ -125,8 +128,13 @@
       padding: 10px 6px 12px;
     }
 
-    .tab :global(svg) {
+    .tab :global(svg),
+    .long {
       display: none;
+    }
+
+    .short {
+      display: inline;
     }
   }
 </style>

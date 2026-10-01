@@ -13,10 +13,10 @@
   let { tab } = $props()
 
   const tabs = [
-    { id: 'top', label: 'Top', href: '#/top', icon: 'flame' },
-    { id: 'new', label: 'New', href: '#/new', icon: 'clock' },
-    { id: 'ask', label: 'Ask', href: '#/ask', icon: 'help' },
-    { id: 'show', label: 'Show', href: '#/show', icon: 'eye' },
+    { id: 'top', label: 'Top stories', short: 'Top', href: '#/top', icon: 'flame' },
+    { id: 'new', label: 'Newest', short: 'New', href: '#/new', icon: 'clock' },
+    { id: 'ask', label: 'Ask HN', short: 'Ask', href: '#/ask', icon: 'help' },
+    { id: 'show', label: 'Show HN', short: 'Show', href: '#/show', icon: 'eye' },
   ]
 
   const blurb = {
