@@ -121,7 +121,8 @@
 
 @media (max-width: 720px) {
   :root {
-    --indent-step: 12px;
+    --indent-step: 8px;
     --header-h: 54px;
   }
 }
+

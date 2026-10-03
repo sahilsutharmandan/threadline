@@ -4,11 +4,11 @@
   import { timeAgo, fullDate } from '../lib/time.js'
   import { countComments } from '../lib/api.js'
 
-  let { comment, depth = 0, op, path = '0', parent = null } = $props()
+  let { comment, depth = 0, op, parent = null } = $props()
 
   const collapse = getContext('collapse')
 
-  const key = $derived(path)
+  const key = $derived(comment.id)
   const collapsed = $derived(collapse.has(key))
   const hidden = $derived(countComments(comment.children))
   const isOp = $derived(!!op && comment.author === op)
@@ -26,7 +26,14 @@
   }
 </script>
 
-<article class="comment" class:collapsed id="c-{path}" data-id={comment.id} style:--depth={depth}>
+<article
+  class="comment"
+  class:collapsed
+  class:child={depth > 0 && depth <= 7}
+  id="c-{comment.id}"
+  data-id={comment.id}
+  style:--depth={depth}
+>
   <header class="head">
     <button
       class="toggle"
@@ -68,8 +75,8 @@
     {#if comment.children.length}
       <div class="children" class:flat={depth >= 7}>
         <button class="guide" type="button" aria-label="Collapse thread" onclick={toggle}></button>
-        {#each comment.children as child, i (i)}
-          <Comment comment={child} depth={depth + 1} {op} path="{path}-{i}" parent={path} />
+        {#each comment.children as child (child.id)}
+          <Comment comment={child} depth={depth + 1} {op} parent={comment.id} />
         {/each}
       </div>
     {/if}
@@ -79,10 +86,14 @@
 <style>
   .comment {
     --guide: hsl(calc(var(--depth) * 47 + 18) 72% 56%);
-    margin-left: calc(var(--depth) * var(--indent-step));
     padding-top: var(--comment-gap);
     border-radius: var(--radius-sm);
     transition: background-color 0.6s;
+    min-width: 0;
+  }
+
+  .comment.child {
+    margin-left: var(--indent-step);
   }
 
   .comment:global(.flash) {
@@ -111,6 +122,7 @@
     font-family: var(--font-mono);
     font-size: 12px;
     line-height: 1;
+    flex-shrink: 0;
   }
 
   .toggle:hover {
@@ -166,6 +178,7 @@
     margin: 4px 0 0 28px;
     font-size: var(--text-comment);
     color: var(--text);
+    min-width: 0;
   }
 
   .body :global(p:first-child) {
@@ -175,11 +188,16 @@
   .children {
     position: relative;
     margin-left: 9px;
+    min-width: 0;
   }
 
   .children.flat {
     margin-left: 0;
     padding-left: 0;
+  }
+
+  .children.flat :global(.comment) {
+    margin-left: 0;
   }
 
   .guide {
@@ -221,7 +239,8 @@
     }
 
     .children {
-      margin-left: 4px;
+      margin-left: 9px;
     }
   }
 </style>
+
