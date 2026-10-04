@@ -67,7 +67,7 @@
   .header {
     position: sticky;
     top: 0;
-    z-index: 30;
+    z-index: var(--z-header);
     height: var(--header-h);
     background: color-mix(in srgb, var(--surface) 86%, transparent);
     backdrop-filter: saturate(160%) blur(12px);

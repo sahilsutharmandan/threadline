@@ -19,6 +19,10 @@
   --content-w: 860px;
   --indent-step: 18px;
 
+  --z-header: 30;
+  --z-overlay: 35;
+  --z-tabbar: 40;
+
   --accent: #f2551d;
   --accent-strong: #d9430f;
   --accent-soft: #fdeee7;

@@ -125,7 +125,7 @@
   .backdrop {
     position: fixed;
     inset: 0;
-    z-index: 60;
+    z-index: var(--z-overlay);
     background: rgb(10 10 10 / 40%);
     backdrop-filter: blur(2px);
   }
@@ -135,7 +135,7 @@
     top: 0;
     right: 0;
     bottom: 0;
-    z-index: 61;
+    z-index: calc(var(--z-overlay) + 1);
     display: flex;
     flex-direction: column;
     gap: 22px;

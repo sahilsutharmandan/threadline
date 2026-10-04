@@ -40,7 +40,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      z-index: 40;
+      z-index: var(--z-tabbar);
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       height: calc(var(--tabbar-h) + env(safe-area-inset-bottom));

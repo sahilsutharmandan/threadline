@@ -87,13 +87,7 @@
 </script>
 
 <div class="wrap page">
-  {#if error}
-    <div class="card empty">
-      <h1 class="page-title">Couldn't load this story</h1>
-      <p class="page-sub">{error}</p>
-      <a class="btn" href="#/top">Back to the feed</a>
-    </div>
-  {:else if !story}
+  {#if !story}
     <div class="story-layout">
       <div class="main">
         <div class="sk title"></div>
@@ -102,6 +96,12 @@
           <div class="sk line" style:width="{90 - i * 9}%"></div>
         {/each}
       </div>
+    </div>
+  {:else if error}
+    <div class="card empty">
+      <h1 class="page-title">Couldn't load this story</h1>
+      <p class="page-sub">{error}</p>
+      <a class="btn" href="#/top">Back to the feed</a>
     </div>
   {:else}
     <div class="story-layout">
@@ -203,9 +203,8 @@
 
   .story-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 280px;
-    gap: 28px;
-    align-items: start;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 32px;
   }
 
   .story {
