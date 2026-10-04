@@ -4,11 +4,11 @@
   import { timeAgo, fullDate } from '../lib/time.js'
   import { countComments } from '../lib/api.js'
 
-  let { comment, depth = 0, op, path = '0', parent = null } = $props()
+  let { comment, depth = 0, op, parent = null } = $props()
 
   const collapse = getContext('collapse')
 
-  const key = $derived(path)
+  const key = $derived(comment.id)
   const collapsed = $derived(collapse.has(key))
   const hidden = $derived(countComments(comment.children))
   const isOp = $derived(!!op && comment.author === op)
@@ -26,7 +26,7 @@
   }
 </script>
 
-<article class="comment" class:collapsed id="c-{path}" data-id={comment.id} style:--depth={depth}>
+<article class="comment" class:collapsed id="c-{comment.id}" data-id={comment.id} style:--depth={depth}>
   <header class="head">
     <button
       class="toggle"
@@ -66,10 +66,10 @@
     </div>
 
     {#if comment.children.length}
-      <div class="children" class:flat={depth >= 7}>
+      <div class="children" class:flat={depth >= 7} class:mobileFlat={depth >= 3}>
         <button class="guide" type="button" aria-label="Collapse thread" onclick={toggle}></button>
-        {#each comment.children as child, i (i)}
-          <Comment comment={child} depth={depth + 1} {op} path="{path}-{i}" parent={path} />
+        {#each comment.children as child (child.id)}
+          <Comment comment={child} depth={depth + 1} {op} parent={comment.id} />
         {/each}
       </div>
     {/if}
@@ -79,7 +79,7 @@
 <style>
   .comment {
     --guide: hsl(calc(var(--depth) * 47 + 18) 72% 56%);
-    margin-left: calc(var(--depth) * var(--indent-step));
+    min-width: 0;
     padding-top: var(--comment-gap);
     border-radius: var(--radius-sm);
     transition: background-color 0.6s;
@@ -92,6 +92,7 @@
   .head {
     display: flex;
     flex-wrap: wrap;
+    overflow-wrap: anywhere;
     align-items: center;
     gap: 4px 8px;
     font-size: var(--text-sm);
@@ -119,6 +120,7 @@
   }
 
   .author {
+    min-width: 0;
     font-weight: 650;
     color: var(--text);
   }
@@ -175,6 +177,7 @@
   .children {
     position: relative;
     margin-left: 9px;
+    padding-left: var(--indent-step);
   }
 
   .children.flat {
@@ -222,6 +225,15 @@
 
     .children {
       margin-left: 4px;
+    }
+
+    .children.mobileFlat {
+      margin-left: 0;
+      padding-left: 0;
+    }
+
+    .mobileFlat > .guide {
+      display: none;
     }
   }
 </style>

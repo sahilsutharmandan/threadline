@@ -1,5 +1,6 @@
 .prose {
   line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 
 .prose p {
@@ -20,8 +21,8 @@
 .prose pre {
   margin: 0.7em 0 0;
   padding: 10px 12px;
-  width: max-content;
-  min-width: 100%;
+  max-width: 100%;
+  min-width: 0;
   overflow-x: auto;
   background: var(--surface-2);
   border: 1px solid var(--border);
