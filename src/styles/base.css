@@ -147,7 +147,7 @@ mark,
 .hl em {
   font-style: normal;
   background: var(--mark-bg);
-  color: inherit;
+  color: var(--mark-fg);
   border-radius: 3px;
   padding: 0 2px;
   margin: 0 -2px;

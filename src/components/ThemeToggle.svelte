@@ -5,11 +5,11 @@
   const icons = { system: 'monitor', light: 'sun', dark: 'moon' }
   const labels = { system: 'System', light: 'Light', dark: 'Dark' }
 
-  let mode = $state(settings.theme)
+  const mode = $derived(settings.theme)
 
   function cycle() {
-    mode = THEMES[(THEMES.indexOf(mode) + 1) % THEMES.length]
-    settings.update({ theme: mode })
+    const next = THEMES[(THEMES.indexOf(settings.theme) + 1) % THEMES.length]
+    settings.update({ theme: next })
   }
 </script>
 

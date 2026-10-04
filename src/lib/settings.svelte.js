@@ -14,6 +14,10 @@ class Settings {
   fontSize = $state(DEFAULTS.fontSize)
   density = $state(DEFAULTS.density)
 
+  constructor() {
+    this.init()
+  }
+
   init() {
     const saved = { ...DEFAULTS, ...read('settings', {}) }
     this.theme = THEMES.includes(saved.theme) ? saved.theme : DEFAULTS.theme

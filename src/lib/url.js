@@ -8,8 +8,8 @@ export function hostOf(url) {
 }
 
 export function siteLabel(url) {
-  const host = url?.split('/')[2]
-  return `(${host})`
+  const host = hostOf(url)
+  return host ? `(${host})` : ''
 }
 
 export function hnLink(id) {
