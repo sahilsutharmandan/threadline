@@ -1,13 +1,16 @@
-export function infinite(node, { key, onLoad }) {
+export function infinite(node, options) {
   const observer = new IntersectionObserver(
     (entries) => {
-      if (entries.some((e) => e.isIntersecting)) onLoad(key)
+      if (entries.some((e) => e.isIntersecting)) options.onLoad(options.key)
     },
     { rootMargin: '0px 0px 600px 0px' }
   )
   observer.observe(node)
 
   return {
+    update(next) {
+      options = next
+    },
     destroy() {
       observer.disconnect()
     },

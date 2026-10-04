@@ -1,4 +1,4 @@
-const TEXT_TYPES = ['text', 'email', 'password', 'url', 'number']
+const TEXT_TYPES = ['text', 'search', 'email', 'password', 'url', 'number', 'tel']
 
 function isTyping(el) {
   if (!el || el === document.body) return false

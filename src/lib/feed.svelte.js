@@ -24,7 +24,7 @@ class Feed {
   }
 
   loadMore(name) {
-    if (this.loading || this.error || this.done) return
+    if (name !== this.name || this.loading || this.error || this.done) return
     return this.load(name, this.page + 1)
   }
 

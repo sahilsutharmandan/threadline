@@ -8,7 +8,14 @@
   let offsets = $state([])
 
   onMount(() => {
-    offsets = [...list.querySelectorAll('.tab')].map((el) => ({ x: el.offsetLeft, w: el.offsetWidth }))
+    const measure = () => {
+      offsets = [...list.querySelectorAll('.tab')].map((el) => ({ x: el.offsetLeft, w: el.offsetWidth }))
+    }
+    const observer = new ResizeObserver(measure)
+    observer.observe(list)
+    list.querySelectorAll('.tab').forEach((el) => observer.observe(el))
+    measure()
+    return () => observer.disconnect()
   })
 
   const index = $derived(items.findIndex((item) => item.id === active))
