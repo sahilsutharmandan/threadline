@@ -21,7 +21,7 @@
     fetchUser(name, ctrl.signal)
       .then((u) => (user = u))
       .catch((e) => {
-        if (e.name !== 'AbortError') error = e.message
+        if (e.message === 'Not found') error = e.message
       })
     return () => ctrl.abort()
   })

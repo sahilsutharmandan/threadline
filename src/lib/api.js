@@ -88,17 +88,29 @@ export async function fetchItem(id, signal) {
 }
 
 export const RANGES = {
-  all: { label: 'Any time', days: null },
-  day: { label: 'Past 24 hours', days: 1 },
-  week: { label: 'Past week', days: 7 },
-  month: { label: 'Past month', days: 30 },
-  year: { label: 'Past year', days: 365 },
+  all: { label: 'Any time', seconds: null },
+  hour: { label: 'Past hour', seconds: 3600 },
+  day: { label: 'Past 24 hours', seconds: DAY },
+  week: { label: 'Past week', seconds: 7 * DAY },
+  month: { label: 'Past month', seconds: 30 * DAY },
+  year: { label: 'Past year', seconds: 365 * DAY },
+}
+
+function toCommentHit(h) {
+  return {
+    id: Number(h.objectID),
+    author: h.author,
+    text: h.comment_text ?? '',
+    time: h.created_at_i,
+    storyId: h.parent_id,
+    storyTitle: h.story_title,
+  }
 }
 
 export async function search({ q = '', type = 'story', range = 'all', points = 0, sort = 'relevance', page = 0 }, signal) {
   const filters = []
-  const days = RANGES[range]?.days
-  if (days) filters.push(`created_at_i>${since(days)}`)
+  const seconds = RANGES[range]?.seconds
+  if (seconds) filters.push(`created_at_i>${since(seconds)}`)
   if (points > 0 && type === 'story') filters.push(`points>=${points}`)
 
   const data = await get(
@@ -119,20 +131,25 @@ export async function search({ q = '', type = 'story', range = 'all', points = 0
     pages: data.nbPages,
     page: data.page,
     ms: data.processingTimeMS,
-    hits: data.hits.map((h) => ({
-      id: Number(h.objectID),
-      type,
-      author: h.author,
-      time: h.created_at_i,
-      points: h.points ?? 0,
-      comments: h.num_comments ?? 0,
-      url: h.url || null,
-      storyId: h.story_id,
-      storyTitle: h.story_title,
-      title: h._highlightResult?.title?.value ?? h.title ?? '',
-      snippet: h._snippetResult?.comment_text?.value ?? h._highlightResult?.comment_text?.value ?? '',
-      tags: h._tags ?? [],
-    })),
+    hits: data.hits.map((h) =>
+      type === 'comment'
+        ? {
+            ...toCommentHit(h),
+            type,
+            snippet: h._snippetResult?.comment_text?.value ?? h._highlightResult?.comment_text?.value ?? '',
+          }
+        : {
+            id: Number(h.objectID),
+            type,
+            author: h.author,
+            time: h.created_at_i,
+            points: h.points ?? 0,
+            comments: h.num_comments ?? 0,
+            url: h.url || null,
+            title: h._highlightResult?.title?.value ?? h.title ?? '',
+            tags: h._tags ?? [],
+          }
+    ),
   }
 }
 
@@ -152,16 +169,6 @@ export async function fetchUserActivity(name, type = 'story', page = 0, signal) 
     total: data.nbHits,
     pages: data.nbPages,
     page: data.page,
-    items: data.hits.map((h) =>
-      type === 'story'
-        ? toStory(h)
-        : {
-            id: Number(h.objectID),
-            text: h.comment_text ?? '',
-            time: h.created_at_i,
-            storyId: h.story_id,
-            storyTitle: h.story_title,
-          }
-    ),
+    items: data.hits.map(type === 'story' ? toStory : toCommentHit),
   }
 }
