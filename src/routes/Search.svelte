@@ -18,16 +18,12 @@
     sort: query.sort === 'date' ? 'date' : 'relevance',
   })
 
-  let text = $state('')
+  let text = $state(query.q ?? '')
   let results = $state(null)
   let more = $state([])
   let loading = $state(false)
   let error = $state(null)
   let input
-
-  $effect(() => {
-    text = params.q
-  })
 
   $effect(() => {
     const p = params
@@ -58,22 +54,29 @@
     navigate(href('/search', { ...params, ...patch, points: (patch.points ?? params.points) || '' }).slice(1), { replace: true })
   }
 
-  let timer
+  let timer = null
   function onInput() {
-    clearTimeout(timer)
-    timer = setTimeout(() => update({ q: text.trim() }), 350)
+    const q = text.trim()
+    if (timer) return
+    timer = setTimeout(() => {
+      timer = null
+      update({ q })
+    }, 300)
   }
 
   function onSubmit(e) {
     e.preventDefault()
     clearTimeout(timer)
+    timer = null
     update({ q: text.trim() })
   }
 
   async function loadMore() {
+    const { q, type, sort } = params
     loading = true
     try {
-      const r = await search({ ...params, page: lastPage + 1 })
+      const r = await search({ q, type, sort, page: lastPage + 1 })
+      if (q !== params.q || type !== params.type || sort !== params.sort) return
       more = [...more, r]
     } catch (e) {
       error = e.message
