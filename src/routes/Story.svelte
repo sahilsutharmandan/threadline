@@ -47,10 +47,22 @@
     return list
   })
 
+  const entry = $derived(
+    story && {
+      id: story.id,
+      title: story.title,
+      url: story.url,
+      author: story.author,
+      points: story.points,
+      comments: data.total,
+      time: story.time,
+      tags: story.tags,
+    }
+  )
   const saved = $derived(story ? readLater.has(story.id) : false)
 
   function toggleSaved() {
-    readLater.toggle({ ...story, comments: data.total })
+    readLater.toggle(entry)
   }
 
   const anyCollapsed = $derived(collapse.size > 0)

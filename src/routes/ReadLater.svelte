@@ -2,9 +2,14 @@
   import Icon from '../components/Icon.svelte'
   import StoryRow from '../components/StoryRow.svelte'
   import { readLater } from '../lib/readLater.svelte.js'
+  import { visited } from '../lib/history.svelte.js'
   import { plural } from '../lib/time.js'
 
   let confirming = $state(false)
+  let show = $state('all')
+
+  const unread = $derived(readLater.items.filter((s) => !visited.has(s.id)))
+  const list = $derived(show === 'unread' ? unread : readLater.items)
 
   function clearAll() {
     if (!confirming) {
@@ -26,23 +31,35 @@
       </p>
     </div>
     {#if readLater.count}
-      <button class="btn" class:danger={confirming} type="button" onclick={clearAll}>
-        <Icon name="trash" size={15} />
-        {confirming ? 'Click again to clear' : 'Clear all'}
-      </button>
+      <div class="tools">
+        <div class="filter" role="group" aria-label="Show">
+          <button type="button" class:on={show === 'all'} aria-pressed={show === 'all'} onclick={() => (show = 'all')}>
+            All <span>{readLater.count}</span>
+          </button>
+          <button type="button" class:on={show === 'unread'} aria-pressed={show === 'unread'} onclick={() => (show = 'unread')}>
+            Unread <span>{unread.length}</span>
+          </button>
+        </div>
+        <button class="btn" class:danger={confirming} type="button" onclick={clearAll}>
+          <Icon name="trash" size={15} />
+          {confirming ? 'Click again to clear' : 'Clear all'}
+        </button>
+      </div>
     {/if}
   </div>
 
-  {#if readLater.count}
+  {#if list.length}
     <section class="list card">
-      {#each readLater.items as story (story.id)}
+      {#each list as story (story.id)}
         <StoryRow {story} />
       {/each}
     </section>
-  {:else}
+  {/if}
+
+  {#if !unread.length}
     <div class="empty card">
       <span class="icon"><Icon name="bookmark" size={28} /></span>
-      <h2>Nothing saved yet</h2>
+      <h2>{show === 'unread' ? 'Nothing unread' : 'Nothing saved yet'}</h2>
       <p>Tap the bookmark on any story, or press <kbd>s</kbd> in the feed, to keep it for later.</p>
       <a class="btn btn-primary" href="#/top">Browse top stories</a>
     </div>
@@ -57,8 +74,47 @@
     gap: 16px;
   }
 
+  .tools {
+    display: flex;
+    gap: 8px;
+  }
+
+  .filter {
+    display: flex;
+    gap: 2px;
+    padding: 3px;
+    border-radius: var(--radius-sm);
+    background: var(--surface-2);
+  }
+
+  .filter button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 28px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--text-2);
+    font-size: var(--text-sm);
+    font-weight: 550;
+  }
+
+  .filter button.on {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .filter span {
+    color: var(--text-3);
+    font-size: var(--text-xs);
+  }
+
   .list {
     overflow: hidden;
+    margin-bottom: 16px;
   }
 
   .danger {
