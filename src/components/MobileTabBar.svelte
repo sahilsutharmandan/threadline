@@ -58,11 +58,20 @@
     align-items: center;
     justify-content: center;
     gap: 3px;
+    min-width: 0;
+    padding: 0 4px;
     border: 0;
     background: none;
     color: var(--text-3);
     font-size: 11px;
     font-weight: 600;
+  }
+
+  span {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .active {

@@ -133,8 +133,9 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    flex: none;
     margin-left: auto;
-    width: min(340px, 40vw);
+    width: min(360px, 44vw);
     height: 38px;
     padding: 0 10px 0 12px;
     border: 1px solid var(--border);
