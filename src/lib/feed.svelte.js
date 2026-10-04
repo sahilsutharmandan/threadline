@@ -25,7 +25,9 @@ class Feed {
 
   loadMore(name) {
     if (this.loading || this.error || this.done) return
-    return this.load(name, this.page + 1)
+    const target = name ?? this.name
+    if (target !== this.name) return
+    return this.load(this.name, this.page + 1)
   }
 
   retry() {
@@ -34,17 +36,18 @@ class Feed {
   }
 
   async load(name, page) {
+    if (name !== this.name) return
     const id = ++this.#request
     this.loading = true
     try {
       const res = await fetchFeed(name, page)
-      if (id !== this.#request) return
+      if (id !== this.#request || name !== this.name) return
       const seen = new Set(this.stories.map((s) => s.id))
       this.stories = page === 0 ? res.stories : [...this.stories, ...res.stories.filter((s) => !seen.has(s.id))]
       this.page = res.page
       this.pages = res.pages
     } catch (err) {
-      if (id === this.#request) this.error = err.message
+      if (id === this.#request && name === this.name) this.error = err.message
     } finally {
       if (id === this.#request) this.loading = false
     }

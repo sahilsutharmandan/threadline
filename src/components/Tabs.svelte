@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from 'svelte'
+  import { onMount, tick } from 'svelte'
   import Icon from './Icon.svelte'
 
   let { items, active, onselect, label = 'Sections' } = $props()
@@ -7,8 +7,28 @@
   let list
   let offsets = $state([])
 
-  onMount(() => {
+  function updateOffsets() {
+    if (!list) return
     offsets = [...list.querySelectorAll('.tab')].map((el) => ({ x: el.offsetLeft, w: el.offsetWidth }))
+  }
+
+  onMount(() => {
+    updateOffsets()
+    const ro = new ResizeObserver(() => updateOffsets())
+    ro.observe(list)
+    window.addEventListener('resize', updateOffsets)
+    document.fonts?.ready?.then(updateOffsets)
+
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', updateOffsets)
+    }
+  })
+
+  $effect(() => {
+    items
+    active
+    tick().then(updateOffsets)
   })
 
   const index = $derived(items.findIndex((item) => item.id === active))
